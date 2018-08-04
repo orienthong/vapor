@@ -1,9 +1,12 @@
 import Vapor
+import HTTP
 
 /// Controls basic CRUD operations on `Todo`s.
 final class TodoController {
     /// Returns a list of all `Todo`s.
     func index(_ req: Request) throws -> Future<[Todo]> {
+        let res = try req.client().get("http://vapor.codes")
+        print(res.eventLoop)
         return Todo.query(on: req).all()
     }
 
@@ -16,8 +19,10 @@ final class TodoController {
 
     /// Deletes a parameterized `Todo`.
     func delete(_ req: Request) throws -> Future<HTTPStatus> {
+        
         return try req.parameters.next(Todo.self).flatMap { todo in
             return todo.delete(on: req)
         }.transform(to: .ok)
     }
+    
 }
